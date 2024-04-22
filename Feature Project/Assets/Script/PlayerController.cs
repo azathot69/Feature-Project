@@ -8,6 +8,13 @@ public class PlayerController : MonoBehaviour
     public bool smoothTrans = false;
     public float moveSpeed = 10f;
     public float rotateSpeed = 500f;
+    public bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
+    [SerializeField]
+    private float raycastDistance = 5f;
+    private Vector3 raycastDir = Vector3.forward;
+    private Vector3 raycastDirLeft = Vector3.left;
+    private Vector3 raycastDirRight = Vector3.right;
+    private Vector3 raycastDirBack = Vector3.back;
 
     Vector3 targetGridPos, prevTargetGridPos, targetRotate;
     PlayerController controller;
@@ -34,7 +41,6 @@ public class PlayerController : MonoBehaviour
             if (AtRest)
             {
                 targetRotate -= Vector3.up * 90f;
-                Debug.Log("Turning Left");
             }
         }
     }
@@ -45,7 +51,6 @@ public class PlayerController : MonoBehaviour
             if (AtRest)
             {
                 targetRotate += Vector3.up * 90f;
-                Debug.Log("Turning Right");
             }
         }
     }
@@ -55,10 +60,9 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            if (AtRest)
+            if (AtRest && !facingWall)
             {
                 targetGridPos += transform.forward;
-                Debug.Log("Moving Forward");
             }
         }
     }
@@ -66,10 +70,9 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            if (AtRest)
+            if (AtRest && !backToWall)
             {
                 targetGridPos -= transform.forward;
-                Debug.Log("Moving Back");
             }
         }
     }
@@ -77,10 +80,9 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            if (AtRest)
+            if (AtRest && !leftToWall)
             {
                 targetGridPos -= transform.right;
-                Debug.Log("Moving Left");
             }
         }
     }
@@ -88,10 +90,9 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            if (AtRest)
+            if (AtRest && !rightToWall)
             {
                 targetGridPos += transform.right;
-                Debug.Log("Moving Right");
             }
         }
     }
@@ -104,37 +105,157 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
     }
 
+    private void Update()
+    {
+        Debug.DrawRay(transform.position, raycastDir, Color.green);
+        Debug.DrawRay(transform.position, raycastDirLeft, Color.red);
+        Debug.DrawRay(transform.position, raycastDirRight, Color.blue);
+        Debug.DrawRay(transform.position, raycastDirBack, Color.yellow);
+        raycastDir = transform.TransformDirection(0, 0, 1);
+        raycastDirLeft = transform.TransformDirection(-1, 0, 0);
+        raycastDirRight = transform.TransformDirection(1, 0, 0);
+        raycastDirBack = transform.TransformDirection(0, 0, -1);
+        CheckForWalls();
+    }
+
     void MovePlayer()
     {
-        if (true)
+        #region Turn
+        if (targetRotate.y > 270f && targetRotate.y < 361f)
         {
-            prevTargetGridPos = targetGridPos;
-            Vector3 targetPos = targetGridPos;
+            targetRotate.y = 0f;
+        }
+        if (targetRotate.y < 0f)
+        {
+            targetRotate.y = 270f;
+        }
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(targetRotate), Time.deltaTime * rotateSpeed);
+        #endregion
 
-            if (targetRotate.y > 270f && targetRotate.y < 361f)
-            {
-                targetRotate.y = 0f;
-            }
-            if (targetRotate.y < 0f)
-            {
-                targetRotate.y = 270f;
-            }
+        #region Move
 
-            if (!smoothTrans)
+        prevTargetGridPos = targetGridPos;
+        Vector3 targetPos = targetGridPos;
+
+        #region Move Smoothly
+        if (!smoothTrans){
+            transform.position = targetPos;
+            transform.rotation = Quaternion.Euler(targetRotate);
+        }else{
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * moveSpeed);
+        }
+        #endregion
+        
+
+        #endregion
+    }
+
+    void CheckForWalls()
+    {
+        RaycastHit hitFront;
+        RaycastHit hitLeft;
+        RaycastHit hitRight;
+        RaycastHit hitBack;
+
+        #region Forward
+        if (Physics.Raycast(transform.position, raycastDir, out hitFront, raycastDistance))
+        {
+            
+            switch(hitFront.collider.gameObject.tag)
             {
-                transform.position = targetPos;
-                transform.rotation = Quaternion.Euler(targetRotate);
-            }
-            else
-            {
-                transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * moveSpeed);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(targetRotate), Time.deltaTime * rotateSpeed);
+                case "Wall":
+                    facingWall = true;
+                    break;
+
+                default:
+                    Debug.Log("You hit something...");
+                    break;
+
+                case null:
+
+                    break;
             }
         }
         else
         {
-            targetGridPos = prevTargetGridPos;
+            facingWall = false;
         }
+        #endregion
+
+        #region Left
+        if (Physics.Raycast(transform.position, raycastDirLeft, out hitLeft, raycastDistance))
+        {
+
+            switch (hitLeft.collider.gameObject.tag)
+            {
+                case "Wall":
+                    leftToWall = true;
+                    break;
+
+                default:
+                    Debug.Log("You hit something...");
+                    break;
+
+                case null:
+
+                    break;
+            }
+        }
+        else
+        {
+            leftToWall = false;
+        }
+        #endregion
+
+        #region Right
+        if (Physics.Raycast(transform.position, raycastDirRight, out hitRight, raycastDistance))
+        {
+
+            switch (hitRight.collider.gameObject.tag)
+            {
+                case "Wall":
+                    rightToWall = true;
+                    break;
+
+                default:
+                    Debug.Log("You hit something...");
+                    break;
+
+                case null:
+
+                    break;
+            }
+        }
+        else
+        {
+            rightToWall = false;
+        }
+        #endregion
+
+        #region Back
+        if (Physics.Raycast(transform.position, raycastDirBack, out hitBack, raycastDistance))
+        {
+
+            switch (hitBack.collider.gameObject.tag)
+            {
+                case "Wall":
+                    backToWall = true;
+                    break;
+
+                default:
+                    Debug.Log("You hit something...");
+                    break;
+
+                case null:
+
+                    break;
+            }
+        }
+        else
+        {
+            backToWall = false;
+        }
+        #endregion
     }
 
     bool AtRest
