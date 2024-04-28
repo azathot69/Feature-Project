@@ -12,9 +12,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float raycastDistance = 5f;
     private Vector3 raycastDir = Vector3.forward;
+    private Vector3 raycastDirUL = Vector3.forward + Vector3.left;
+    private Vector3 raycastDirUR = Vector3.forward + Vector3.right;
     private Vector3 raycastDirLeft = Vector3.left;
     private Vector3 raycastDirRight = Vector3.right;
     private Vector3 raycastDirBack = Vector3.back;
+    private Vector3 raycastDirBL = Vector3.back + Vector3.left;
+    private Vector3 raycastDirBR = Vector3.back + Vector3.right;
 
     Vector3 targetGridPos, prevTargetGridPos, targetRotate;
     PlayerController controller;
@@ -107,10 +111,10 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawRay(transform.position, raycastDir, Color.green);
-        Debug.DrawRay(transform.position, raycastDirLeft, Color.red);
-        Debug.DrawRay(transform.position, raycastDirRight, Color.blue);
-        Debug.DrawRay(transform.position, raycastDirBack, Color.yellow);
+        Debug.DrawRay(transform.position, raycastDir * raycastDistance, Color.green);
+        Debug.DrawRay(transform.position, raycastDirLeft * raycastDistance, Color.red);
+        Debug.DrawRay(transform.position, raycastDirRight * raycastDistance, Color.blue);
+        Debug.DrawRay(transform.position, raycastDirBack * raycastDistance, Color.yellow);
         raycastDir = transform.TransformDirection(0, 0, 1);
         raycastDirLeft = transform.TransformDirection(-1, 0, 0);
         raycastDirRight = transform.TransformDirection(1, 0, 0);
