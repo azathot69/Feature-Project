@@ -8,17 +8,15 @@ public class PlayerController : MonoBehaviour
     public bool smoothTrans = false;
     public float moveSpeed = 10f;
     public float rotateSpeed = 500f;
-    public bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
+    private bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
+    public float moveMulti = 1.1f;
     [SerializeField]
     private float raycastDistance = 5f;
     private Vector3 raycastDir = Vector3.forward;
-    private Vector3 raycastDirUL = Vector3.forward + Vector3.left;
-    private Vector3 raycastDirUR = Vector3.forward + Vector3.right;
     private Vector3 raycastDirLeft = Vector3.left;
     private Vector3 raycastDirRight = Vector3.right;
     private Vector3 raycastDirBack = Vector3.back;
-    private Vector3 raycastDirBL = Vector3.back + Vector3.left;
-    private Vector3 raycastDirBR = Vector3.back + Vector3.right;
+
 
     Vector3 targetGridPos, prevTargetGridPos, targetRotate;
     PlayerController controller;
@@ -66,7 +64,7 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !facingWall)
             {
-                targetGridPos += transform.forward;
+                targetGridPos += transform.forward * moveMulti;
             }
         }
     }
@@ -76,7 +74,7 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !backToWall)
             {
-                targetGridPos -= transform.forward;
+                targetGridPos -= transform.forward * moveMulti;
             }
         }
     }
@@ -86,7 +84,7 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !leftToWall)
             {
-                targetGridPos -= transform.right;
+                targetGridPos -= transform.right * moveMulti;
             }
         }
     }
@@ -96,7 +94,7 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !rightToWall)
             {
-                targetGridPos += transform.right;
+                targetGridPos += transform.right * moveMulti;
             }
         }
     }
