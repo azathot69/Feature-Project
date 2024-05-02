@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Controls the player's movement and actions
+/// Player can move in the four cardinal directions
+/// Player can also rotate camera 90 degrees left or right
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     public bool smoothTrans = false;
     public float moveSpeed = 10f;
     public float rotateSpeed = 500f;
     private bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
+    public bool playerTurn = true;
     public float moveMulti = 1.1f;
     [SerializeField]
     private float raycastDistance = 5f;
@@ -36,6 +42,11 @@ public class PlayerController : MonoBehaviour
 
     #region Movement
     //Rotate Player
+
+    /// <summary>
+    /// Rotate Player 90 degrees to the left
+    /// </summary>
+    /// <param name="context"></param>
     public void RotateLeft(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -46,6 +57,11 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Rotate Player 90 degrees to the right
+    /// </summary>
+    /// <param name="context"></param>
     public void RotateRight(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -58,43 +74,68 @@ public class PlayerController : MonoBehaviour
     }
 
     //Move Player
+
+    /// <summary>
+    /// Moves player towards the direction they're facing
+    /// </summary>
+    /// <param name="context"></param>
     public void MoveForward(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             if (AtRest && !facingWall)
             {
+                playerTurn = false;
                 targetGridPos += transform.forward * moveMulti;
             }
         }
     }
+
+    /// <summary>
+    /// Moves player away from the direction they were facing
+    /// </summary>
+    /// <param name="context"></param>
     public void MoveBack(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             if (AtRest && !backToWall)
             {
+                playerTurn = false;
                 targetGridPos -= transform.forward * moveMulti;
             }
         }
     }
+
+    /// <summary>
+    /// Moves the player to their left
+    /// </summary>
+    /// <param name="context"></param>
     public void MoveLeft(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             if (AtRest && !leftToWall)
             {
+                playerTurn = false;
                 targetGridPos -= transform.right * moveMulti;
             }
         }
     }
+
+    /// <summary>
+    /// Moves the player to their right
+    /// </summary>
+    /// <param name="context"></param>
     public void MoveRight(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             if (AtRest && !rightToWall)
             {
+                playerTurn = false;
                 targetGridPos += transform.right * moveMulti;
+                
             }
         }
     }
@@ -120,6 +161,9 @@ public class PlayerController : MonoBehaviour
         CheckForWalls();
     }
 
+    /// <summary>
+    /// Makes the player move and/or rotate
+    /// </summary>
     void MovePlayer()
     {
         #region Turn
@@ -143,6 +187,7 @@ public class PlayerController : MonoBehaviour
         if (!smoothTrans){
             transform.position = targetPos;
             transform.rotation = Quaternion.Euler(targetRotate);
+            
         }else{
             transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * moveSpeed);
         }
@@ -152,6 +197,9 @@ public class PlayerController : MonoBehaviour
         #endregion
     }
 
+    /// <summary>
+    /// Check for walls via Raycast
+    /// </summary>
     void CheckForWalls()
     {
         RaycastHit hitFront;
@@ -260,6 +308,10 @@ public class PlayerController : MonoBehaviour
         #endregion
     }
 
+
+    /// <summary>
+    /// Makes sure the player isn't moving
+    /// </summary>
     bool AtRest
     {
         get
@@ -267,6 +319,7 @@ public class PlayerController : MonoBehaviour
             if ((Vector3.Distance(transform.position, targetGridPos) < 0.05f) &&
                 (Vector3.Distance(transform.eulerAngles, targetRotate) < 0.05f))
             {
+                playerTurn = true;
                 return true;
             }
             else
@@ -276,4 +329,13 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+
+
+
+    /*
+    IEnumerator PlayerTurnCountdown()
+    {
+
+    }
+    */
 }
