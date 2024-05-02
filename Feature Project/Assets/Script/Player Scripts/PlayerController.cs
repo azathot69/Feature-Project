@@ -10,11 +10,13 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance;
+
     public bool smoothTrans = false;
     public float moveSpeed = 10f;
     public float rotateSpeed = 500f;
     private bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
-    public bool playerTurn = true;
+    public bool playerTurn = false;
     public float moveMulti = 1.1f;
     [SerializeField]
     private float raycastDistance = 5f;
@@ -31,6 +33,16 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        //Initialize Singleton
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+
         controller = GetComponent<PlayerController>();
     }
 
@@ -41,8 +53,7 @@ public class PlayerController : MonoBehaviour
     }
 
     #region Movement
-    //Rotate Player
-
+    #region Turn Player
     /// <summary>
     /// Rotate Player 90 degrees to the left
     /// </summary>
@@ -72,6 +83,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    #endregion
 
     //Move Player
 
@@ -85,8 +97,9 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !facingWall)
             {
-                playerTurn = false;
+                playerTurn = true;
                 targetGridPos += transform.forward * moveMulti;
+                //playerTurn = false;
             }
         }
     }
@@ -101,8 +114,9 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !backToWall)
             {
-                playerTurn = false;
+                playerTurn = true;
                 targetGridPos -= transform.forward * moveMulti;
+                //playerTurn = false;
             }
         }
     }
@@ -117,8 +131,9 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !leftToWall)
             {
-                playerTurn = false;
+                playerTurn = true;
                 targetGridPos -= transform.right * moveMulti;
+                //playerTurn = false;
             }
         }
     }
@@ -133,9 +148,10 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !rightToWall)
             {
-                playerTurn = false;
+                playerTurn = true;
                 targetGridPos += transform.right * moveMulti;
-                
+                //playerTurn = false;
+
             }
         }
     }
@@ -146,6 +162,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
+        
     }
 
     private void Update()
@@ -159,6 +176,8 @@ public class PlayerController : MonoBehaviour
         raycastDirRight = transform.TransformDirection(1, 0, 0);
         raycastDirBack = transform.TransformDirection(0, 0, -1);
         CheckForWalls();
+
+        if (playerTurn == true) playerTurn = false;
     }
 
     /// <summary>
@@ -180,8 +199,10 @@ public class PlayerController : MonoBehaviour
 
         #region Move
 
+        //Code is called every frame
         prevTargetGridPos = targetGridPos;
         Vector3 targetPos = targetGridPos;
+
 
         #region Move Smoothly
         if (!smoothTrans){
@@ -319,7 +340,6 @@ public class PlayerController : MonoBehaviour
             if ((Vector3.Distance(transform.position, targetGridPos) < 0.05f) &&
                 (Vector3.Distance(transform.eulerAngles, targetRotate) < 0.05f))
             {
-                playerTurn = true;
                 return true;
             }
             else
