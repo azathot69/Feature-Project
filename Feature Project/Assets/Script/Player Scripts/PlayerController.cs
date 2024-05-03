@@ -49,7 +49,6 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         targetGridPos = Vector3Int.RoundToInt(transform.position);
-
     }
 
     #region Movement
@@ -97,9 +96,8 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !facingWall)
             {
-                playerTurn = true;
+                StartCoroutine(PlayerTurnCountdown());
                 targetGridPos += transform.forward * moveMulti;
-                //playerTurn = false;
             }
         }
     }
@@ -114,9 +112,8 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !backToWall)
             {
-                playerTurn = true;
+                StartCoroutine(PlayerTurnCountdown());
                 targetGridPos -= transform.forward * moveMulti;
-                //playerTurn = false;
             }
         }
     }
@@ -131,9 +128,8 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !leftToWall)
             {
-                playerTurn = true;
+                StartCoroutine(PlayerTurnCountdown());
                 targetGridPos -= transform.right * moveMulti;
-                //playerTurn = false;
             }
         }
     }
@@ -148,10 +144,8 @@ public class PlayerController : MonoBehaviour
         {
             if (AtRest && !rightToWall)
             {
-                playerTurn = true;
+                StartCoroutine(PlayerTurnCountdown());
                 targetGridPos += transform.right * moveMulti;
-                //playerTurn = false;
-
             }
         }
     }
@@ -162,7 +156,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
-        
+        //if (playerTurn == true) playerTurn = false;
     }
 
     private void Update()
@@ -177,7 +171,7 @@ public class PlayerController : MonoBehaviour
         raycastDirBack = transform.TransformDirection(0, 0, -1);
         CheckForWalls();
 
-        if (playerTurn == true) playerTurn = false;
+        
     }
 
     /// <summary>
@@ -352,10 +346,17 @@ public class PlayerController : MonoBehaviour
 
 
 
-    /*
-    IEnumerator PlayerTurnCountdown()
+    /// <summary>
+    /// For the enemies;
+    /// When moving, temporary turn on "PlayerTurn" for a frame
+    /// This allows the enemies to move
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator PlayerTurnCountdown()
     {
-
+        playerTurn = true;
+        yield return new WaitForSeconds(.1f);
+        playerTurn = false;
     }
-    */
+    
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 enum Movement
 {
     Bounce,
-    Loop
+    Turn
 }
 public class EnemyParent : MonoBehaviour
 {
@@ -17,6 +17,12 @@ public class EnemyParent : MonoBehaviour
     public float moveMulti = 2f;
 
     Vector3 targetGridPos, prevTargetGridPos, targetRotate;
+
+    [SerializeField]
+    private Movement moveBehave;
+
+    private float raycastDistance = 1.5f;
+    private Vector3 raycastDir = Vector3.forward;
     #endregion
 
     private void Awake()
@@ -32,10 +38,53 @@ public class EnemyParent : MonoBehaviour
         //Move Enemy
         if (PlayerController.Instance.playerTurn == true && AtRest)
         {
-            targetGridPos += transform.forward * moveMulti;
+            CheckWall();
+            switch (moveBehave)
+            {
+                case Movement.Bounce:
+                    if (facingWall==false)
+                    {
+                        targetGridPos += transform.forward * moveMulti;
+                    }
+                    break;
+
+                case Movement.Turn:
+
+                    break;
+
+
+            }
         }
     }
 
+    private void Update()
+    {
+        Debug.DrawRay(transform.position, raycastDir * raycastDistance, Color.green);
+    }
+
+    private void CheckWall()
+    {
+        RaycastHit hitFront;
+        if (Physics.Raycast(transform.position, raycastDir, out hitFront, raycastDistance))
+        {
+
+            switch (hitFront.collider.gameObject.tag)
+            {
+                case "Wall":
+                    targetRotate -= Vector3.up * 180f;
+                    break;
+            }
+        }
+        else
+        {
+            facingWall = false;
+        }
+    }
+
+
+    /// <summary>
+    /// The enemy from one square to another
+    /// </summary>
     private void MoveEnemy()
     {
         Vector3 targetPos = targetGridPos;
@@ -55,6 +104,9 @@ public class EnemyParent : MonoBehaviour
         #endregion
     }
 
+    /// <summary>
+    /// Checks to see if the instance is at rest (not Moving)
+    /// </summary>
     bool AtRest
     {
         get
