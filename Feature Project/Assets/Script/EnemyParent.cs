@@ -47,9 +47,52 @@ public class EnemyParent : MonoBehaviour
         Debug.DrawRay(transform.position, raycastDir * raycastDistance, Color.green);
         raycastDir = transform.TransformDirection(0, 0, raycastDistance);
 
+        
+
         //Move Enemy
+        if (!PlayerController.Instance.playerTurn) { return; }
+
+
+        switch (moveBehave)
+        {
+            //Move in opposite direction when facing a wall
+            case Movement.Bounce:
+
+
+                if (facingWall == false)
+                {
+                    if (!AtRest) return;
+                    Debug.Log("Moving");
+                    targetGridPos += (transform.forward * moveMulti);
+                }
+                if (facingWall == true)
+                {
+                    if (!AtRest) return;
+                    //Turn 180 degrees
+                    Debug.Log("Turning");
+                    transform.RotateAround(transform.position, transform.up, 180f);
+                    targetGridPos += (transform.forward * moveMulti);
+                }
+
+
+                break;
+
+            //Turn right and move when facing wall
+            case Movement.Turn:
+                if (facingWall == true)
+                {
+                    //Turn 90 degrees
+                    transform.RotateAround(transform.position, transform.up, 90f);
+                }
+                targetGridPos += (transform.forward * moveMulti);
+                break;
+
+
+        }
+
         if (PlayerController.Instance.playerTurn && AtRest)
         {
+            /*
             switch (moveBehave)
             {
                 //Move in opposite direction when facing a wall
@@ -58,13 +101,13 @@ public class EnemyParent : MonoBehaviour
                     
                     if (facingWall == false)
                     {
-                        print("Moving");
+                        Debug.Log("Moving");
                         targetGridPos += (transform.forward * moveMulti);
                     }
                     if (facingWall == true)
                     {
                         //Turn 180 degrees
-                        print("Turning");
+                        Debug.Log("Turning");
                         transform.RotateAround(transform.position, transform.up, 180f);
                         targetGridPos += (transform.forward * moveMulti);
                     }
@@ -84,6 +127,7 @@ public class EnemyParent : MonoBehaviour
 
 
             }
+            */
         }
     }
 
@@ -145,10 +189,14 @@ public class EnemyParent : MonoBehaviour
             if ((Vector3.Distance(transform.position, targetGridPos) < 0.05f) &&
                 (Vector3.Distance(transform.eulerAngles, targetRotate) < 0.05f))
             {
+                //Debug.Log("At Rest: " + true);
+
                 return true;
             }
             else
             {
+                //Debug.Log("At Rest: " + false);
+
                 return false;
             }
         }
