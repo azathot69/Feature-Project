@@ -6,7 +6,8 @@ using UnityEngine.EventSystems;
 enum Movement
 {
     Bounce,
-    Turn
+    Turn,
+    TurnOther
 }
 public class EnemyParent : MonoBehaviour
 {
@@ -25,11 +26,22 @@ public class EnemyParent : MonoBehaviour
 
     private float raycastDistance = 1.5f;
     private Vector3 raycastDir = Vector3.forward;
+    [SerializeField]
+    private int startRotate;
     #endregion
 
     private void Start()
     {
         targetGridPos = Vector3Int.RoundToInt(transform.position);
+        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y + startRotate, 0);
+        if (moveBehave == Movement.Turn)
+        {
+            targetRotate += Vector3.up * 90f;
+        }
+        if (moveBehave == Movement.TurnOther)
+        {
+            targetRotate += Vector3.up * -90f;
+        }
     }
 
     // Update is called once per frame
@@ -43,11 +55,12 @@ public class EnemyParent : MonoBehaviour
 
     private void Update()
     {
+        
         CheckWall();
         Debug.DrawRay(transform.position, raycastDir * raycastDistance, Color.green);
         raycastDir = transform.TransformDirection(0, 0, raycastDistance);
 
-        
+
 
         //Move Enemy
         if (!PlayerController.Instance.playerTurn) { return; }
@@ -62,16 +75,13 @@ public class EnemyParent : MonoBehaviour
                 if (facingWall == false)
                 {
                     if (!AtRest) return;
-                    Debug.Log("Moving");
                     targetGridPos += (transform.forward * moveMulti);
                 }
                 if (facingWall == true)
                 {
                     if (!AtRest) return;
                     //Turn 180 degrees
-                    Debug.Log("Turning");
-                    transform.RotateAround(transform.position, transform.up, 180f);
-                    targetGridPos += (transform.forward * moveMulti);
+                    targetRotate += Vector3.up * 180f;
                 }
 
 
@@ -81,54 +91,29 @@ public class EnemyParent : MonoBehaviour
             case Movement.Turn:
                 if (facingWall == true)
                 {
+                    if (!AtRest) return;
                     //Turn 90 degrees
-                    transform.RotateAround(transform.position, transform.up, 90f);
+                    targetRotate += Vector3.up * 90f;
                 }
+
+                if (!AtRest) return;
                 targetGridPos += (transform.forward * moveMulti);
                 break;
 
+            case Movement.TurnOther:
+                if (facingWall == true)
+                {
+                    if (!AtRest) return;
+                    //Turn 90 degrees
+                    targetRotate += Vector3.up * 90f;
+                }
+                if (!AtRest) return;
+                targetGridPos += (transform.forward * moveMulti);
+
+                break;
 
         }
 
-        if (PlayerController.Instance.playerTurn && AtRest)
-        {
-            /*
-            switch (moveBehave)
-            {
-                //Move in opposite direction when facing a wall
-                case Movement.Bounce:
-
-                    
-                    if (facingWall == false)
-                    {
-                        Debug.Log("Moving");
-                        targetGridPos += (transform.forward * moveMulti);
-                    }
-                    if (facingWall == true)
-                    {
-                        //Turn 180 degrees
-                        Debug.Log("Turning");
-                        transform.RotateAround(transform.position, transform.up, 180f);
-                        targetGridPos += (transform.forward * moveMulti);
-                    }
-                    
-
-                    break;
-
-                //Turn right and move when facing wall
-                case Movement.Turn:
-                    if (facingWall == true)
-                    {
-                        //Turn 90 degrees
-                        transform.RotateAround(transform.position, transform.up, 90f);
-                    }
-                    targetGridPos += (transform.forward * moveMulti);
-                    break;
-
-
-            }
-            */
-        }
     }
 
     private void CheckWall()
@@ -141,6 +126,10 @@ public class EnemyParent : MonoBehaviour
                 case "Wall":
                     facingWall = true;
 
+                    break;
+
+                case "EnemyLimit":
+                    facingWall = true;
                     break;
 
                 default:
@@ -161,6 +150,21 @@ public class EnemyParent : MonoBehaviour
     /// </summary>
     private void MoveEnemy()
     {
+        #region Turn
+        if (targetRotate.y > 270f && targetRotate.y < 361f)
+        {
+            targetRotate.y = 0f;
+        }
+        if (targetRotate.y < 0f)
+        {
+            targetRotate.y = 270f;
+        }
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(targetRotate), Time.deltaTime * rotateSpeed);
+        #endregion
+
+
+
+        prevTargetGridPos = targetGridPos;
         Vector3 targetPos = targetGridPos;
 
 

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+
 
 /// <summary>
 /// Controls the player's movement and actions
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 raycastDirLeft = Vector3.left;
     private Vector3 raycastDirRight = Vector3.right;
     private Vector3 raycastDirBack = Vector3.back;
+    private Vector3 tileSense = Vector3.down;
 
 
     Vector3 targetGridPos, prevTargetGridPos, targetRotate;
@@ -169,6 +172,7 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(transform.position, raycastDirLeft * raycastDistance, Color.red);
         Debug.DrawRay(transform.position, raycastDirRight * raycastDistance, Color.blue);
         Debug.DrawRay(transform.position, raycastDirBack * raycastDistance, Color.yellow);
+        Debug.DrawRay(transform.position, tileSense * raycastDistance, Color.magenta);
         raycastDir = transform.TransformDirection(0, 0, 1);
         raycastDirLeft = transform.TransformDirection(-1, 0, 0);
         raycastDirRight = transform.TransformDirection(1, 0, 0);
@@ -225,6 +229,7 @@ public class PlayerController : MonoBehaviour
         RaycastHit hitLeft;
         RaycastHit hitRight;
         RaycastHit hitBack;
+        
 
         #region Forward
         if (Physics.Raycast(transform.position, raycastDir, out hitFront, raycastDistance))
@@ -237,12 +242,9 @@ public class PlayerController : MonoBehaviour
                     break;
 
                 default:
-                    Debug.Log("You hit something...");
-                    break;
-
-                case null:
 
                     break;
+
             }
         }
         else
@@ -261,13 +263,6 @@ public class PlayerController : MonoBehaviour
                     leftToWall = true;
                     break;
 
-                default:
-                    Debug.Log("You hit something...");
-                    break;
-
-                case null:
-
-                    break;
             }
         }
         else
@@ -286,13 +281,6 @@ public class PlayerController : MonoBehaviour
                     rightToWall = true;
                     break;
 
-                default:
-                    Debug.Log("You hit something...");
-                    break;
-
-                case null:
-
-                    break;
             }
         }
         else
@@ -311,13 +299,6 @@ public class PlayerController : MonoBehaviour
                     backToWall = true;
                     break;
 
-                default:
-                    Debug.Log("You hit something...");
-                    break;
-
-                case null:
-
-                    break;
             }
         }
         else
@@ -325,8 +306,38 @@ public class PlayerController : MonoBehaviour
             backToWall = false;
         }
         #endregion
+
+
     }
 
+    private void CheckTile() { 
+        RaycastHit tileCheck;
+        #region
+        if (Physics.Raycast(transform.position, tileSense, out tileCheck, raycastDistance))
+        {
+
+            switch (tileCheck.collider.gameObject.tag)
+            {
+                //Check For Enemies
+                case "Enemy":
+                    //Game Over
+                    SceneManager.LoadScene(0);
+                    break;
+
+                //Check for Resources
+                case "Resource":
+                    //Check if can gather resources
+
+                    /*If (canGather != 0
+                    Add random item to list
+                    canGather--;
+                    StartCoroutine(PlayerTurnCountdown());
+                    */
+                    break;
+            }
+        }
+        #endregion
+    }
 
     /// <summary>
     /// Makes sure the player isn't moving
