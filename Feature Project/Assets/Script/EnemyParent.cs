@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 enum Movement
 {
@@ -13,6 +14,7 @@ public class EnemyParent : MonoBehaviour
     public bool smoothTrans = false;
     public float moveSpeed = 10f;
     public float rotateSpeed = 500f;
+    [SerializeField]
     private bool facingWall = false;
     public float moveMulti = 2f;
 
@@ -25,7 +27,7 @@ public class EnemyParent : MonoBehaviour
     private Vector3 raycastDir = Vector3.forward;
     #endregion
 
-    private void Awake()
+    private void Start()
     {
         targetGridPos = Vector3Int.RoundToInt(transform.position);
     }
@@ -33,33 +35,56 @@ public class EnemyParent : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        
         MoveEnemy();
 
+        
+    }
+
+    private void Update()
+    {
+        CheckWall();
+        Debug.DrawRay(transform.position, raycastDir * raycastDistance, Color.green);
+        raycastDir = transform.TransformDirection(0, 0, raycastDistance);
+
         //Move Enemy
-        if (PlayerController.Instance.playerTurn == true && AtRest)
+        if (PlayerController.Instance.playerTurn && AtRest)
         {
-            CheckWall();
             switch (moveBehave)
             {
+                //Move in opposite direction when facing a wall
                 case Movement.Bounce:
-                    if (facingWall==false)
+
+                    
+                    if (facingWall == false)
                     {
-                        targetGridPos += transform.forward * moveMulti;
+                        print("Moving");
+                        targetGridPos += (transform.forward * moveMulti);
                     }
+                    if (facingWall == true)
+                    {
+                        //Turn 180 degrees
+                        print("Turning");
+                        transform.RotateAround(transform.position, transform.up, 180f);
+                        targetGridPos += (transform.forward * moveMulti);
+                    }
+                    
+
                     break;
 
+                //Turn right and move when facing wall
                 case Movement.Turn:
-
+                    if (facingWall == true)
+                    {
+                        //Turn 90 degrees
+                        transform.RotateAround(transform.position, transform.up, 90f);
+                    }
+                    targetGridPos += (transform.forward * moveMulti);
                     break;
 
 
             }
         }
-    }
-
-    private void Update()
-    {
-        Debug.DrawRay(transform.position, raycastDir * raycastDistance, Color.green);
     }
 
     private void CheckWall()
@@ -67,11 +92,15 @@ public class EnemyParent : MonoBehaviour
         RaycastHit hitFront;
         if (Physics.Raycast(transform.position, raycastDir, out hitFront, raycastDistance))
         {
-
             switch (hitFront.collider.gameObject.tag)
             {
                 case "Wall":
-                    targetRotate -= Vector3.up * 180f;
+                    facingWall = true;
+
+                    break;
+
+                default:
+
                     break;
             }
         }
@@ -79,6 +108,7 @@ public class EnemyParent : MonoBehaviour
         {
             facingWall = false;
         }
+
     }
 
 
@@ -109,6 +139,7 @@ public class EnemyParent : MonoBehaviour
     /// </summary>
     bool AtRest
     {
+        
         get
         {
             if ((Vector3.Distance(transform.position, targetGridPos) < 0.05f) &&

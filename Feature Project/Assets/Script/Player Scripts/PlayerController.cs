@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
+    #region Variables
     public static PlayerController Instance;
 
     public bool smoothTrans = false;
@@ -30,6 +31,7 @@ public class PlayerController : MonoBehaviour
     PlayerController controller;
     InputAction moveAction;
     PlayerInput playerInput;
+    #endregion
 
     private void Awake()
     {
@@ -53,6 +55,7 @@ public class PlayerController : MonoBehaviour
 
     #region Movement
     #region Turn Player
+
     /// <summary>
     /// Rotate Player 90 degrees to the left
     /// </summary>
@@ -84,7 +87,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    //Move Player
+    #region Move Player
 
     /// <summary>
     /// Moves player towards the direction they're facing
@@ -153,10 +156,11 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
+    #endregion
+
     private void FixedUpdate()
     {
         MovePlayer();
-        //if (playerTurn == true) playerTurn = false;
     }
 
     private void Update()
