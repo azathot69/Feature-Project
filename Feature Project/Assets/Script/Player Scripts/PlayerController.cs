@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     
 
-    List<string> itemGathered = new List<string>();
+    public List<string> itemGathered = new List<string>();
     private Vector3 startingPos;
 
     Vector3 targetGridPos, prevTargetGridPos, targetRotate;
@@ -199,15 +199,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "Enemy")
-        {
-            enemyHit = true;
-            SceneManager.LoadScene(0);
-            transform.position = startingPos;
-        }
-    }
+    
 
     /// <summary>
     /// Makes the player move and/or rotate
@@ -248,7 +240,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// Check for walls via Raycast
+    /// Check for walls and enemies via Raycast
     /// </summary>
     void CheckForWalls()
     {
@@ -268,6 +260,7 @@ public class PlayerController : MonoBehaviour
                 case "Wall":
                     facingWall = true;
                     break;
+
 
                 default:
                     facingWall = false;
@@ -291,6 +284,7 @@ public class PlayerController : MonoBehaviour
                     leftToWall = true;
                     break;
 
+
                 default:
                     leftToWall = false;
                     break;
@@ -312,6 +306,7 @@ public class PlayerController : MonoBehaviour
                     rightToWall = true;
                     break;
 
+
                 default:
                     rightToWall = false;
                     break;
@@ -332,6 +327,7 @@ public class PlayerController : MonoBehaviour
                 case "Wall":
                     backToWall = true;
                     break;
+
 
                 default:
                     backToWall = false;
@@ -430,6 +426,7 @@ public class PlayerController : MonoBehaviour
         RaycastHit hitFront;
         RaycastHit tileCheck;
 
+
         //Check below player
         if (Physics.Raycast(transform.position, tileSense, out tileCheck, raycastDistance))
         {
@@ -438,8 +435,23 @@ public class PlayerController : MonoBehaviour
             {
                 //Check for Resources
                 case "Resource":
-                    //Check if can gather resources
 
+                    //Assign Temp Variable
+                    var instance = tileCheck.collider.gameObject;
+
+                    //Check Item
+                    var itemGet = instance.GetComponent<GatherSpot>().Gather();
+
+                    //Check if can gather resources
+                    if (itemGet == null) return;
+                    itemGathered.Add(itemGet);
+
+                    //Player Turn
+                    StartCoroutine(PlayerTurnCountdown());
+
+                    break;
+
+                default:
                     break;
             }
         }

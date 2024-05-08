@@ -7,7 +7,7 @@ public class GatherSpot : MonoBehaviour
     #region Variables
     public int canGather = 3;
     public string itemGet;
-    List<string> itemBag = new List<string>();
+    public List<string> itemBag = new List<string>();
     #endregion
 
     private void Awake()
@@ -27,7 +27,6 @@ public class GatherSpot : MonoBehaviour
         if (canGather != 0) {
             //Get random Item
             itemGet = itemBag[Random.Range(0, itemBag.Count)];
-
             //Reduce canGather
             canGather--;
 
