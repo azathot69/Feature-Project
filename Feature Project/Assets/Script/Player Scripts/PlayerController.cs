@@ -18,7 +18,8 @@ public class PlayerController : MonoBehaviour
     public bool smoothTrans = false;
     public float moveSpeed = 10f;
     public float rotateSpeed = 500f;
-    private bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
+    public bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
+    public bool enemyHit = false;
     public bool playerTurn = false;
     public float moveMulti = 1.1f;
     [SerializeField]
@@ -29,6 +30,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 raycastDirBack = Vector3.back;
     private Vector3 tileSense = Vector3.down;
 
+    
+
+    List<string> itemGathered = new List<string>();
+    private Vector3 startingPos;
 
     Vector3 targetGridPos, prevTargetGridPos, targetRotate;
     PlayerController controller;
@@ -47,6 +52,8 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(this);
         }
+
+        startingPos = transform.position;
 
         controller = GetComponent<PlayerController>();
     }
@@ -159,6 +166,16 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
+    #region
+    public void Action(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            ActionCheck();
+        }
+    }
+    #endregion
+
     #endregion
 
     private void FixedUpdate()
@@ -180,6 +197,16 @@ public class PlayerController : MonoBehaviour
         CheckForWalls();
 
         
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            enemyHit = true;
+            SceneManager.LoadScene(0);
+            transform.position = startingPos;
+        }
     }
 
     /// <summary>
@@ -229,7 +256,8 @@ public class PlayerController : MonoBehaviour
         RaycastHit hitLeft;
         RaycastHit hitRight;
         RaycastHit hitBack;
-        
+        RaycastHit enemyCheck;
+
 
         #region Forward
         if (Physics.Raycast(transform.position, raycastDir, out hitFront, raycastDistance))
@@ -242,7 +270,7 @@ public class PlayerController : MonoBehaviour
                     break;
 
                 default:
-
+                    facingWall = false;
                     break;
 
             }
@@ -263,6 +291,9 @@ public class PlayerController : MonoBehaviour
                     leftToWall = true;
                     break;
 
+                default:
+                    leftToWall = false;
+                    break;
             }
         }
         else
@@ -281,6 +312,9 @@ public class PlayerController : MonoBehaviour
                     rightToWall = true;
                     break;
 
+                default:
+                    rightToWall = false;
+                    break;
             }
         }
         else
@@ -299,6 +333,9 @@ public class PlayerController : MonoBehaviour
                     backToWall = true;
                     break;
 
+                default:
+                    backToWall = false;
+                    break;
             }
         }
         else
@@ -307,35 +344,63 @@ public class PlayerController : MonoBehaviour
         }
         #endregion
 
-
-    }
-
-    private void CheckTile() { 
-        RaycastHit tileCheck;
-        #region
-        if (Physics.Raycast(transform.position, tileSense, out tileCheck, raycastDistance))
+        # region Check for enemy
+        if (Physics.Raycast(transform.position, raycastDir, out enemyCheck, raycastDistance/4))
         {
-
-            switch (tileCheck.collider.gameObject.tag)
+            switch (enemyCheck.collider.gameObject.tag)
             {
                 //Check For Enemies
                 case "Enemy":
                     //Game Over
+                    enemyHit = true;
                     SceneManager.LoadScene(0);
-                    break;
-
-                //Check for Resources
-                case "Resource":
-                    //Check if can gather resources
-
-                    /*If (canGather != 0
-                    Add random item to list
-                    canGather--;
-                    StartCoroutine(PlayerTurnCountdown());
-                    */
+                    
                     break;
             }
         }
+
+        if (Physics.Raycast(transform.position, raycastDirLeft, out enemyCheck, raycastDistance / 4))
+        {
+            switch (enemyCheck.collider.gameObject.tag)
+            {
+                //Check For Enemies
+                case "Enemy":
+                    //Game Over
+                    enemyHit = true;
+                    SceneManager.LoadScene(0);
+
+                    break;
+            }
+        }
+
+        if (Physics.Raycast(transform.position, raycastDirRight, out enemyCheck, raycastDistance / 4))
+        {
+            switch (enemyCheck.collider.gameObject.tag)
+            {
+                //Check For Enemies
+                case "Enemy":
+                    //Game Over
+                    enemyHit = true;
+                    SceneManager.LoadScene(0);
+
+                    break;
+            }
+        }
+
+        if (Physics.Raycast(transform.position, raycastDirBack, out enemyCheck, raycastDistance / 4))
+        {
+            switch (enemyCheck.collider.gameObject.tag)
+            {
+                //Check For Enemies
+                case "Enemy":
+                    //Game Over
+                    enemyHit = true;
+                    SceneManager.LoadScene(0);
+
+                    break;
+            }
+        }
+
         #endregion
     }
 
@@ -359,7 +424,44 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    //Checks below and infront of the player for any thing to do
+    private void ActionCheck()
+    {
+        RaycastHit hitFront;
+        RaycastHit tileCheck;
 
+        //Check below player
+        if (Physics.Raycast(transform.position, tileSense, out tileCheck, raycastDistance))
+        {
+
+            switch (tileCheck.collider.gameObject.tag)
+            {
+                //Check for Resources
+                case "Resource":
+                    //Check if can gather resources
+
+                    break;
+            }
+        }
+
+        //Check in front of player
+        if (Physics.Raycast(transform.position, raycastDir, out hitFront, raycastDistance))
+        {
+
+            switch (hitFront.collider.gameObject.tag)
+            {
+                case "ShortCut":
+                    //Activate Short Cut
+
+                    break;
+
+                default:
+
+                    break;
+
+            }
+        }
+    }
 
     /// <summary>
     /// For the enemies;

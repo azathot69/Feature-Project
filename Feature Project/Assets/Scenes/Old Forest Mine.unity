@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17277291, g: 0.21589854, b: 0.2978333, a: 1}
+  m_IndirectSpecularColor: {r: 0.17277275, g: 0.21589802, b: 0.29783264, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6952,7 +6952,7 @@ GameObject:
   - component: {fileID: 424182578}
   m_Layer: 0
   m_Name: Enemy (1)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7055,12 +7055,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 424182577}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8, y: 0.5, z: 18}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.4413729, y: -0.9905596, z: 8.579664}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1760211508}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &424893328
 PrefabInstance:
@@ -12714,6 +12714,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Short Cut (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 2844726647573522462, guid: 41fd63e325bada241b0e87430ae2b775,
+        type: 3}
+      propertyPath: m_TagString
+      value: ShortCut
+      objectReference: {fileID: 0}
     - target: {fileID: 5711681462553904495, guid: 41fd63e325bada241b0e87430ae2b775,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16343,7 +16348,7 @@ GameObject:
   - component: {fileID: 1017663190}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16427,12 +16432,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1017663185}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18, y: 0.5, z: 2}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.558627, y: -0.9905596, z: -7.420336}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1760211508}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1017663190
 MonoBehaviour:
@@ -29697,7 +29702,10 @@ Transform:
   m_LocalPosition: {x: -11.441373, y: 1.4905596, z: 9.420336}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1017663189}
+  - {fileID: 424182582}
+  - {fileID: 1818773654}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1760280088 stripped
@@ -30257,7 +30265,7 @@ GameObject:
   - component: {fileID: 1818773650}
   m_Layer: 0
   m_Name: Enemy (2)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30360,12 +30368,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1818773649}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6, y: 0.5, z: 22}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 5.441373, y: -0.9905596, z: 12.579664}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1760211508}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1822098571 stripped
 Transform:
@@ -36438,6 +36446,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Short Cut
       objectReference: {fileID: 0}
+    - target: {fileID: 2844726647573522462, guid: 41fd63e325bada241b0e87430ae2b775,
+        type: 3}
+      propertyPath: m_TagString
+      value: ShortCut
+      objectReference: {fileID: 0}
     - target: {fileID: 5711681462553904495, guid: 41fd63e325bada241b0e87430ae2b775,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -36502,9 +36515,6 @@ SceneRoots:
   - {fileID: 1293645939}
   - {fileID: 2083814823}
   - {fileID: 1760211508}
-  - {fileID: 1017663189}
-  - {fileID: 424182582}
-  - {fileID: 1818773654}
   - {fileID: 206144046}
   - {fileID: 1378401571}
   - {fileID: 610875745}
