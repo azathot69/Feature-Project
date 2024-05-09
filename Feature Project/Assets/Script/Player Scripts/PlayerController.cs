@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 
 
 /// <summary>
@@ -45,7 +47,11 @@ public class PlayerController : MonoBehaviour
     PlayerController controller;
     InputAction moveAction;
     PlayerInput playerInput;
-    //PlayerData playerData;
+
+    public PlayerData playerData;
+
+    //Score Text
+    //public TMP_Text scoreText;
 
     #endregion
 
@@ -64,11 +70,15 @@ public class PlayerController : MonoBehaviour
         startingPos = transform.position;
 
         controller = GetComponent<PlayerController>();
+
+        playerData.GetComponent<PlayerData>().ResetScore();
     }
 
     private void Start()
     {
         targetGridPos = Vector3Int.RoundToInt(transform.position);
+        //Initialize Text
+        //scoreText.text = "Score : $" + PlayerData.Instance.score;
     }
 
     #region Movement
@@ -193,6 +203,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        //scoreText.text = "Score: $" + PlayerData.Instance.score;
+
         Debug.DrawRay(transform.position, raycastDir * raycastDistance, Color.green);
         Debug.DrawRay(transform.position, raycastDirLeft * raycastDistance, Color.red);
         Debug.DrawRay(transform.position, raycastDirRight * raycastDistance, Color.blue);
@@ -269,6 +281,10 @@ public class PlayerController : MonoBehaviour
                     facingWall = true;
                     break;
 
+                case "Home":
+                    facingWall = true;
+                    break;
+
                 case "ShortCut":
                     facingWall = true;
                     break;
@@ -292,6 +308,10 @@ public class PlayerController : MonoBehaviour
             switch (hitLeft.collider.gameObject.tag)
             {
                 case "Wall":
+                    leftToWall = true;
+                    break;
+
+                case "Home":
                     leftToWall = true;
                     break;
 
@@ -320,6 +340,10 @@ public class PlayerController : MonoBehaviour
                     rightToWall = true;
                     break;
 
+                case "Home":
+                    rightToWall = true;
+                    break;
+
                 case "ShortCut":
                     rightToWall = true;
                     break;
@@ -342,6 +366,10 @@ public class PlayerController : MonoBehaviour
             switch (hitBack.collider.gameObject.tag)
             {
                 case "Wall":
+                    backToWall = true;
+                    break;
+
+                case "Home":
                     backToWall = true;
                     break;
 
@@ -369,7 +397,7 @@ public class PlayerController : MonoBehaviour
                 case "Enemy":
                     //Game Over
                     PlayerData.Instance.ResetScore();
-                    SceneManager.LoadScene(0);
+                    SceneManager.LoadScene(1);
                     
                     break;
             }
@@ -383,7 +411,7 @@ public class PlayerController : MonoBehaviour
                 case "Enemy":
                     //Game Over
                     PlayerData.Instance.ResetScore();
-                    SceneManager.LoadScene(0);
+                    SceneManager.LoadScene(1);
 
                     break;
             }
@@ -397,7 +425,7 @@ public class PlayerController : MonoBehaviour
                 case "Enemy":
                     //Game Over
                     PlayerData.Instance.ResetScore();
-                    SceneManager.LoadScene(0);
+                    SceneManager.LoadScene(1);
 
                     break;
             }
@@ -411,7 +439,7 @@ public class PlayerController : MonoBehaviour
                 case "Enemy":
                     //Game Over
                     PlayerData.Instance.ResetScore();
-                    SceneManager.LoadScene(0);
+                    SceneManager.LoadScene(1);
 
                     break;
             }
@@ -471,7 +499,8 @@ public class PlayerController : MonoBehaviour
                     itemGathered.Add(itemGet);
 
                     //Add to score
-                    PlayerData.Instance.score += 100;
+                    //PlayerData.Instance.score += 100;
+                    PlayerData.Instance.GetComponent<PlayerData>().score += 100;
 
                     //Player Turn
                     StartCoroutine(PlayerTurnCountdown());
@@ -503,6 +532,9 @@ public class PlayerController : MonoBehaviour
                 case "Home":
                     //Ask the player if they want to return home
 
+                    playerData.GetComponent<PlayerData>().endScore = PlayerData.Instance.GetComponent<PlayerData>().score;
+
+                    SceneManager.LoadScene(5);
 
                     break;
 

@@ -7,12 +7,18 @@ using UnityEngine.UI;
 public class PlayerData : MonoBehaviour
 {
     #region
-    //Variables
-    public int score;
 
     //Singleton
     public static PlayerData Instance { get; private set; }
 
+
+    //Variables
+    public int score;
+
+    public int endScore;
+
+    [SerializeField]
+    private bool isEnd = false;
     //Score Text
     public TMP_Text scoreText;
     #endregion
@@ -27,24 +33,36 @@ public class PlayerData : MonoBehaviour
         {
             Instance = this;
         }
+
     }
 
     private void Start()
     {
         //Initialize Text
-        scoreText.text = "Score: " + score;
+        scoreText.text = "Score : $" + score;
     }
 
     private void Update()
     {
-        scoreText.text = "Score: " + score;
+        if (!isEnd) {
+            scoreText.text = "Score: $" + score;
+        }
+        else if(isEnd)
+        {
+            scoreText.text = "You earned $" + endScore + " En!";
+        }
+        
     }
     //draw Score
 
     /// <summary>
     /// Resets the score to '0'
     /// </summary>
-    public void ResetScore() {  score = 0; }
+    public void ResetScore() {  
+        score = 0;
+        endScore = 0;
+
+}
 
 
 }
