@@ -30,11 +30,14 @@ public class GatherSpot : MonoBehaviour
             //Reduce canGather
             canGather--;
 
+            if (canGather == 0) { this.gameObject.SetActive(false); }
+
             return itemGet;
         }
         else
         {
             print("You can't gather any more!");
+            
             return null;
         }
     }

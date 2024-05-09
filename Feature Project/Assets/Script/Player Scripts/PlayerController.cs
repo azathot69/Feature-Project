@@ -13,15 +13,23 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     #region Variables
+    //Singleton
     public static PlayerController Instance;
 
-    public bool smoothTrans = false;
-    public float moveSpeed = 10f;
-    public float rotateSpeed = 500f;
-    public bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
-    public bool enemyHit = false;
+    //Movement
+    private bool smoothTrans = true;
+    private float moveSpeed = 10f;
+    private float rotateSpeed = 500f;
+    private float moveMulti = 2f;
+    private Vector3 startingPos;
+    //---Keep Public!
+    public Vector3 targetGridPos, prevTargetGridPos, targetRotate;
+
+    //Collision
+    private bool facingWall = false, leftToWall = false, rightToWall = false, backToWall = false;
     public bool playerTurn = false;
-    public float moveMulti = 1.1f;
+    
+    //Raycast
     [SerializeField]
     private float raycastDistance = 5f;
     private Vector3 raycastDir = Vector3.forward;
@@ -30,27 +38,27 @@ public class PlayerController : MonoBehaviour
     private Vector3 raycastDirBack = Vector3.back;
     private Vector3 tileSense = Vector3.down;
 
-    
-
+    //List
     public List<string> itemGathered = new List<string>();
-    private Vector3 startingPos;
-
-    Vector3 targetGridPos, prevTargetGridPos, targetRotate;
+    
+    //Player Data
     PlayerController controller;
     InputAction moveAction;
     PlayerInput playerInput;
+    //PlayerData playerData;
+
     #endregion
 
     private void Awake()
     {
         //Initialize Singleton
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
+            Destroy(this);
         }
         else
         {
-            Destroy(this);
+            Instance = this;
         }
 
         startingPos = transform.position;
@@ -199,7 +207,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    
+    #region Movement Logic
 
     /// <summary>
     /// Makes the player move and/or rotate
@@ -261,6 +269,9 @@ public class PlayerController : MonoBehaviour
                     facingWall = true;
                     break;
 
+                case "ShortCut":
+                    facingWall = true;
+                    break;
 
                 default:
                     facingWall = false;
@@ -284,6 +295,9 @@ public class PlayerController : MonoBehaviour
                     leftToWall = true;
                     break;
 
+                case "ShortCut":
+                    leftToWall = true;
+                    break;
 
                 default:
                     leftToWall = false;
@@ -306,6 +320,9 @@ public class PlayerController : MonoBehaviour
                     rightToWall = true;
                     break;
 
+                case "ShortCut":
+                    rightToWall = true;
+                    break;
 
                 default:
                     rightToWall = false;
@@ -328,6 +345,9 @@ public class PlayerController : MonoBehaviour
                     backToWall = true;
                     break;
 
+                case "ShortCut":
+                    backToWall = true;
+                    break;
 
                 default:
                     backToWall = false;
@@ -348,7 +368,7 @@ public class PlayerController : MonoBehaviour
                 //Check For Enemies
                 case "Enemy":
                     //Game Over
-                    enemyHit = true;
+                    PlayerData.Instance.ResetScore();
                     SceneManager.LoadScene(0);
                     
                     break;
@@ -362,7 +382,7 @@ public class PlayerController : MonoBehaviour
                 //Check For Enemies
                 case "Enemy":
                     //Game Over
-                    enemyHit = true;
+                    PlayerData.Instance.ResetScore();
                     SceneManager.LoadScene(0);
 
                     break;
@@ -376,7 +396,7 @@ public class PlayerController : MonoBehaviour
                 //Check For Enemies
                 case "Enemy":
                     //Game Over
-                    enemyHit = true;
+                    PlayerData.Instance.ResetScore();
                     SceneManager.LoadScene(0);
 
                     break;
@@ -390,7 +410,7 @@ public class PlayerController : MonoBehaviour
                 //Check For Enemies
                 case "Enemy":
                     //Game Over
-                    enemyHit = true;
+                    PlayerData.Instance.ResetScore();
                     SceneManager.LoadScene(0);
 
                     break;
@@ -420,7 +440,11 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    //Checks below and infront of the player for any thing to do
+    #endregion
+
+    /// <summary>
+    /// Checks below and infront of the player for anything to do
+    /// </summary>
     private void ActionCheck()
     {
         RaycastHit hitFront;
@@ -437,14 +461,17 @@ public class PlayerController : MonoBehaviour
                 case "Resource":
 
                     //Assign Temp Variable
-                    var instance = tileCheck.collider.gameObject;
+                    var _instance = tileCheck.collider.gameObject;
 
                     //Check Item
-                    var itemGet = instance.GetComponent<GatherSpot>().Gather();
+                    var itemGet = _instance.GetComponent<GatherSpot>().Gather();
 
                     //Check if can gather resources
                     if (itemGet == null) return;
                     itemGathered.Add(itemGet);
+
+                    //Add to score
+                    PlayerData.Instance.score += 100;
 
                     //Player Turn
                     StartCoroutine(PlayerTurnCountdown());
@@ -464,6 +491,18 @@ public class PlayerController : MonoBehaviour
             {
                 case "ShortCut":
                     //Activate Short Cut
+                    //Assign Temp Variable
+                    var _shortCut = hitFront.collider.gameObject;
+
+                    if (_shortCut.GetComponent<ShortCuts>().isActivated == false) return;
+
+                    _shortCut.GetComponent<ShortCuts>().UseShortCut();
+                    StartCoroutine(PlayerTurnCountdown());
+                    break;
+
+                case "Home":
+                    //Ask the player if they want to return home
+
 
                     break;
 

@@ -24,22 +24,74 @@ public class ShortCuts : MonoBehaviour
 
     //Variables
     //The position the S.C. will place the player from the entrance
-    public Vector2 fromEntrance;
+    public Vector3 toEntrance;
 
-    //The position to place the player from the exit
-    public Vector2 fromExit;
 
+    //The other end of the Short Cut (if applicable)
+    [SerializeField]
+    private GameObject otherEntrance;
+    [SerializeField]
+    private GameObject player;
     #endregion
 
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    /// Send player to other side
+    /// </summary>
+    public void UseShortCut()
     {
-        
-    }
+        //Check to see which end of the short cut the player is checking
+        if (isExit)
+        {
+            //Check to see if path is unlocked.
+            if (isActivated)
+            {
+                //If Unlocked, move player
+                player.GetComponent<PlayerController>().targetGridPos.x = toEntrance.x;
+                player.GetComponent<PlayerController>().targetGridPos.z = toEntrance.z;
+                player.transform.position = toEntrance;
+                return;
+            }
+            else
+            {
+                //If locked, deny passage
+                print("This passage is blocked");
+                return;
+            }
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        //Check to see if it's only 1 way
+        if (isOneWay)
+        {
+            //If it's the 1W's exit, deny entry
+            if (isExit)
+            {
+                print("You can't get through here");
+                return;
+            }
+            else
+            {
+                //If it's 1W's entrance, proceed
+                player.GetComponent<PlayerController>().targetGridPos.x = toEntrance.x;
+                player.GetComponent<PlayerController>().targetGridPos.z = toEntrance.z;
+                player.transform.position = toEntrance;
+                return;
+            }
+        }
+
+        //If it's a 2W & Not Exit
+        if (!isExit && !isOneWay)
+        {
+            //If the other entrance is something, proceed
+            if (otherEntrance == null) { return; }
+
+            //Activate other entrance
+            otherEntrance.GetComponent<ShortCuts>().isActivated = true;
+
+            //Proceed with Path
+            player.GetComponent<PlayerController>().targetGridPos.x = toEntrance.x;
+            player.GetComponent<PlayerController>().targetGridPos.z = toEntrance.z;
+            player.transform.position = toEntrance;
+        }
+
     }
 }

@@ -6,6 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Menu.unity
+    guid: 88b6707b92e62564fa72c87049e1b23a
+  - enabled: 1
     path: Assets/Scenes/Old Forest Mine.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Instructions/Instruct.unity
+    guid: 6725d1b0ed6d1144eb39710bb3c50a80
+  - enabled: 1
+    path: Assets/Scenes/Instructions/Instruct 1.unity
+    guid: 6322655ffa922704f9a9a096deef2f08
+  - enabled: 1
+    path: Assets/Scenes/Instructions/Instruct 2.unity
+    guid: 4f401e8c08bbc8d4eb4200178d1f4b45
+  - enabled: 1
+    path: Assets/Scenes/Win.unity
+    guid: de87afb27641e684282532c055f5e7cb
   m_configObjects: {}
